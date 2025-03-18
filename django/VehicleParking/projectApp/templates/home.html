@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Hệ Thống Tìm Kiếm Vị Trí Đỗ Xe Ô Tô
+{% endblock %}
+
+{% block content %}
+<main class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="container">
+                <div id="search-form">
+                    <div class="input-group mb-3">
+                        <input id="search-input" type="text" class="form-control" placeholder="Tìm kiếm bãi đỗ" oninput="showSuggestions()">
+                        <div class="input-group-append">
+                            <button id="search-button" type="submit" class="btn btn-primary" onclick="searchParkingLots()">Tìm kiếm</button>
+                        </div>
+                    </div>
+                    <div id="suggestions" class="suggestions"></div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <!-- Bản đồ -->
+                        <div id="map" style="height: 500px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <!-- Danh sách bãi đỗ -->
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2 class="text-info mt-4">Danh sách các bãi đỗ:</h2>
+                        <div class="parking-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script src="{% static 'app.js' %}"></script>
+{% endblock %}

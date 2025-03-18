@@ -1,0 +1,76 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block nav-sidebar %}{% endblock %}
+
+{% block content %}
+<style>
+    .stats-container {
+        display: flex;
+        justify-content: space-around;
+        margin: 20px 0;
+    }
+    .stats-item {
+        text-align: center;
+        font-family: Arial, sans-serif;
+    }
+    .stats-item h3 {
+        color: blue;
+    }
+    .stats-item p {
+        color: green;
+        font-size: 24px;
+    }
+    .car-icon {
+        font-size: 24px;
+    }
+</style>
+
+<h1>{{ parking_lot.name }}</h1>
+<p>Location: {{ parking_lot.location }}</p>
+
+<div class="stats-container">
+    <div class="stats-item">
+        <h3>Today's Vehicle Entries</h3>
+        <p><span id="entries-today-{{ parking_lot.id }}">{{ entries_today }}</span> <span class="car-icon">🚗</span></p>
+    </div>
+    <div class="stats-item">
+        <h3>Yesterday's Vehicle Entries</h3>
+        <p><span id="entries-yesterday-{{ parking_lot.id }}">{{ entries_yesterday }}</span> <span class="car-icon">🚗</span></p>
+    </div>
+    <div class="stats-item">
+        <h3>Last 7 Days Vehicle Entries</h3>
+        <p><span id="entries-last-7-days-{{ parking_lot.id }}">{{ entries_last_7_days }}</span> <span class="car-icon">🚗</span></p>
+    </div>
+    <div class="stats-item">
+        <h3>Total Vehicle Entries</h3>
+        <p><span id="total-entries-{{ parking_lot.id }}">{{ total_entries }}</span> <span class="car-icon">🚗</span></p>
+    </div>
+</div>
+
+<h2>{% trans 'Applications' %}</h2>
+{% if app_list %}
+    {% for app in app_list %}
+    <div class="app-{{ app.app_label }} module{% if app.app_url in request.path|urlencode %} current-app{% endif %}">
+        {% for model in app.models %}
+        <tr class="model-{{ model.object_name|lower }}{% if model.admin_url in request.path|urlencode %} current-model{% endif %}">
+            {% if model.name != "Parking lots"%}
+                {% if model.admin_url %}
+                    <p scope="row"><a href="{{ model.admin_url }}"{% if model.admin_url in request.path|urlencode %} aria-current="page"{% endif %}>{{ model.name }}</a></p>
+                {% else %}
+                    <p scope="row">{{ model.name }}</p>
+                {% endif %}
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </div>
+    {% endfor %}
+{% else %}
+<p>{% translate 'You don’t have permission to view or edit anything.' %}</p>
+{% endif %}
+
+{% endblock %}
+
+{% block extrahead %}
+    <script src="{% static "main.js" %}"></script>
+{% endblock %}

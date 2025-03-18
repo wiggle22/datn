@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}
+Thông tin khách hàng
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2>Thông tin khách hàng</h2>
+            <!-- Form để nhập thông tin khách hàng -->
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="full_name">Họ và tên:</label>
+                    <input type="text" class="form-control" id="full_name" name="full_name">
+                </div>
+                <div class="form-group">
+                    <label for="vehicle_number">Biển số xe:</label>
+                    <input type="text" class="form-control" id="vehicle_number" name="vehicle_number">
+                </div>
+                <div class="form-group">
+                    <label for="contact_number">Số điện thoại liên hệ:</label>
+                    <input type="text" class="form-control" id="contact_number" name="contact_number">
+                </div>
+                <button type="submit" class="btn btn-primary">Gửi</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Đặt Chỗ Thành Công
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        {% if message %}
+            <h1 class="text-center text-danger">Đặt Chỗ Không Thành Công</h1>
+            <p class="text-center">Khách Hàng: {{ reservation.customer.full_name }}</p>
+            <p class="text-center">Bãi Đỗ: {{ reservation.lot.name }}</p>
+            <p class="text-center">Thời gian: {{ reservation.reserved_date|date:"d/m/Y" }}</p>
+            <p class="text-center">Từ {{ reservation.reserved_from|time:"H:i" }} đến {{ reservation.reserved_to|time:"H:i" }}</p>
+            <p class="text-center">Lỗi: {{ message }}</p>
+        {% else %}
+            <h1 class="text-center">Đặt Chỗ Thành Công</h1>
+            <p class="text-center">Mã Đặt Chỗ: {{ reservation.id }}</p>
+            <p class="text-center">Khách Hàng: {{ reservation.customer.full_name }}</p>
+            <p class="text-center">Bãi Đỗ: {{ reservation.lot.name }}</p>
+            <p class="text-center">Thời gian: {{ reservation.reserved_date|date:"d/m/Y" }}</p>
+            <p class="text-center">Từ {{ reservation.reserved_from|time:"H:i" }} đến {{ reservation.reserved_to|time:"H:i" }}</p>
+            <div class="text-center mt-4">
+                <h2>Mã QR</h2>
+                <img src="data:image/png;base64,{{ qr_code }}" alt="Mã QR" style="max-width: 200px;">
+            </div>
+        {% endif %}
+    </div>   
+
+{% if payment_timeout %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            alert("{{ message }}");
+        });
+    </script>
+{% endif %}    
+
+{% endblock %}

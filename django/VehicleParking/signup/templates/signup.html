@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Đăng ký
+{% endblock title %}
+
+{% block css %}
+<link rel="stylesheet" href={% static "styles.css" %}>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <!-- Tab Đăng nhập và Đăng ký -->
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'login' %}">ĐĂNG NHẬP</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link active" href="{% url 'signup' %}">ĐĂNG KÝ</a>
+    </li>
+  </ul>
+
+  <!-- Card cho Form Đăng nhập -->
+  <div class="card mt-3">
+    <div class="card-body">
+      <!-- Form Fields -->
+       {% if form.errors %}
+      <div class="error" id="error-container">
+        <ul>
+          {% for field in form %}
+            {% for error in field.errors %}
+              <li class="text-danger">{{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+      <form method="post" id="signup-form" novalidate>
+        {% csrf_token %}
+        <!-- Input Tên đăng nhập -->
+        <div class="form-group">
+          <input type="input" class="form-control" name="username" id="inputUsername" placeholder="Tên đăng nhập" required >
+        </div>
+
+        <!-- Input email -->
+        <div class="form-group">
+          <input type="input" class="form-control" name="email" id="inputUsername" placeholder="Email" required >
+        </div> 
+
+        <!-- Input Mật khẩu -->
+        <div class="form-group">
+          <input type="password" class="form-control" name="password1" id="inputPass" placeholder="Mật khẩu" required>
+        </div>
+        <div class="help" id="id_new_password1_helptext">
+          <ul>
+              <li>Mật khẩu của bạn không thể quá giống với thông tin cá nhân khác của bạn.</li>
+              <li>Mật khẩu của bạn phải chứa ít nhất 8 ký tự.</li>
+              <li>Mật khẩu của bạn không thể là một mật khẩu phổ biến.</li>
+              <li>Mật khẩu của bạn không thể hoàn toàn là số.</li>
+          </ul>
+        </div>
+        <div class="form-group">
+          <input type="password" class="form-control" name="password2" id="inputPass" placeholder="Nhập lại mật khẩu" required>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Tạo tài khoản</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

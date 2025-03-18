@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Đăng ký
+{% endblock title %}
+
+{% block css %}
+<link rel="stylesheet" href={% static "styles.css" %}>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Card cho Form Password Reset -->
+    <div class="card mt-3">
+        <div class="card-body">
+            <p>Đã gửi email tới địa chỉ bạn cung cấp. Vui lòng nhấp kiểm tra email để xác nhận tài khoản.</a>.</p>     
+        </div>
+    </div>
+</div>
+
+{% endblock %}

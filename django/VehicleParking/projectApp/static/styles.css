@@ -1,0 +1,43 @@
+/* Additional styling for custom elements */
+body {
+    background-color: #f0f0f0;
+}
+
+header h1 {
+    font-size: 1.2em;
+    padding-left: 20px;;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.parking-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.parking-item {
+    margin-bottom: 20px;
+}
+
+footer p {
+    margin: 0;
+    text-align: left;
+}
+
+/* Media Queries for better control */
+@media (min-width: 768px) {
+    header h1 {
+        font-size: 1.5em;
+    }
+}
+
+.img-fluid-custom {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+    width: 100%;  /* Đảm bảo hình ảnh chiếm toàn bộ chiều rộng của thẻ cha */
+    height: 100%;  /* Chiều cao tùy chỉnh theo yêu cầu */
+}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Đăng nhập{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <!-- Tab Đăng nhập và Đăng ký -->
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link active" href="{% url 'login' %}">ĐĂNG NHẬP</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'signup' %}">ĐĂNG KÝ</a>
+    </li>
+  </ul>
+    
+  <!-- Card cho Form Đăng nhập -->
+  <div class="card mt-3">
+    <div class="card-body">
+      {% if form.errors %}
+      <p class="text-danger">
+          Tên đăng nhập hoặc mật khẩu không đúng. Vui lòng kiểm tra lại.
+      </p>
+       {% endif %}
+       <!-- Form Đăng nhập -->
+      <form method="post" novalidate id="login-form">
+        {% csrf_token %}
+        <!-- Input Tên đăng nhập -->
+        <div class="form-group">
+          <input type="input" class="form-control" name="username" id="inputUsername" placeholder="Tên đăng nhập" required >
+        </div>
+
+        <!-- Input Mật khẩu -->
+        <div class="form-group">
+          <input type="password" class="form-control" name="password" id="inputPass" placeholder="Mật khẩu" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Đăng nhập</button>
+      </form>
+      
+      <!-- Liên kết Quên mật khẩu? -->
+      {% url 'password_reset' as password_reset_url %}
+      {% if password_reset_url %}
+        <a href="{{ password_reset_url }}" class="d-block mt-3">Quên mật khẩu?</a>
+      {% endif %}
+      
+    </div>
+  </div>
+</div>
+
+{% endblock %}

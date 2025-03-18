@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Chi Tiết Bãi Đỗ Xe
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static "reservation.js" %}"></script>
+<script>
+// Truyền parking_lot.id và parking_lot.price_per_hour vào JavaScript thông qua các biến toàn cục
+window.parkingLotId = "{{ parking_lot.id }}";
+window.parkingLotName = "{{ parking_lot.name }}";
+window.parkingLotPriceFirstTwoHours = "{{ parking_lot.price_for_first_two_hours }}";
+window.parkingLotPricePerHourAfterTwoHours = "{{ parking_lot.price_per_hour_after_two_hours }}";
+</script>
+{% endblock scripts %}
+
+{% block content %}
+
+<main class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="container">
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <!-- Bản đồ -->
+                        <div id="map" style="height: 500px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <h2 class="text-info">{{ parking_lot.name }}</h2>
+            <p>{{ parking_lot.location }}</p>
+            <p>Khả dụng: <span id="availability-{{ parking_lot.id }}"></span>/10</p>
+            <p>Giá vé gửi xe:</p>
+            <ul>
+                <li>Hai giờ đầu: {{ parking_lot.formatted_price_for_first_two_hours }}</li>
+                <li>Các giờ tiếp theo: {{ parking_lot.formatted_price_per_hour_after_two_hours }}</li>
+            </ul>
+            <p>Mở cửa: {{ parking_lot.formatted_opening_time }} - Đóng cửa: {{ parking_lot.formatted_closing_time }}</p>
+            {% if user.is_authenticated %}
+            <h3 class="mt-4">Vui lòng chọn thời gian và vị trí đỗ xe:</h3>
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+
+                {{ form.non_field_errors }}
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <ul>
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <div class="form-group row">
+                    <label for="id_reserved_from" class="col-sm-3 col-form-label">Thời gian vào:</label>
+                    <div class="col-sm-9">
+                        <input type="time" class="form-control" name="reserved_from" required id="id_reserved_from" onchange="calculatePrice()">
+                        <div class="invalid-feedback">
+                            Vui lòng chọn thời gian vào.
+                        </div>
+                        <div id="invalid_in" style="display: none" class="invalid-feedback">
+                            Thời gian vào không hợp lệ.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="id_reserved_to" class="col-sm-3 col-form-label">Thời gian kết thúc:</label>
+                    <div class="col-sm-9">
+                        <input type="time" class="form-control" name="reserved_to" required id="id_reserved_to" onchange="calculatePrice()">
+                        <div class="invalid-feedback">
+                            Vui lòng chọn thời gian kết thúc.
+                        </div>
+                        <div id="invalid_out" style="display: none" class="invalid-feedback">
+                            Thời gian kết thúc không hợp lệ.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Vị trí đỗ:</label>
+                    <div class="col-sm-9">
+                        <div class="parking-spots">
+                            {% for spot in all_spots %}
+                                <button type="button" class="btn btn-spot {% if spot.is_reserved or not spot.is_avaiable %}reserved{% else %}available{% endif %}"
+                                        data-spot-id="{{ spot.id }}"
+                                        data-spot-number="{{ spot.spot_number }}"
+                                        onclick="selectSpot(this)"
+                                        {% if spot.is_reserved %}disabled{% endif %}>
+                                    {{ spot.spot_number }}
+                                </button>
+                            {% endfor %}
+                        </div>
+                        <input type="hidden" name="spot" id="selected-spot" required>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Tổng giá tiền:</label>
+                    <div class="col-sm-9">
+                        <p id="total-price">0 VND</p>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Thanh toán</button>
+            </form>
+            <style>
+                .form-control {
+                    max-width: 500px;
+                }
+                .parking-spots {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                }
+                .btn-spot {
+                    width: 60px;
+                    height: 60px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    border: 1px solid #ccc;
+                    cursor: pointer;
+                    background-color: #f8f9fa;
+                }
+                .btn-spot.available {
+                    background-color: #28a745;
+                    color: white;
+                }
+                .btn-spot.available1 {
+                    background-color: #28a745;
+                    color: white;
+                }
+                .btn-spot.reserved {
+                    background-color: #dc3545;
+                    color: white;
+                    cursor: not-allowed;
+                }
+                .btn-spot.reserved1 {
+                    background-color: #dc3545;
+                    color: white;
+                    cursor: not-allowed;
+                }
+                .btn-spot.selected {
+                    background-color: #007bff;
+                    color: white;
+                }
+            </style>
+            {% else %}
+                <p>Vui lòng đăng nhập để có thể đặt chỗ trước.</p>
+            {% endif %}
+        </div>
+    </div>
+</main>
+<script>
+    function selectSpot(button) {
+        const selectedSpotInput = document.getElementById('selected-spot');
+        const buttons = document.querySelectorAll('.btn-spot');
+        buttons.forEach(btn => btn.classList.remove('selected'));
+        button.classList.add('selected');
+        selectedSpotInput.value = button.dataset.spotId;
+    }
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            var reservationValid = "{{ reservation_valid }}"
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+                if (reservationValid === 'False_out') {
+                    // Hiển thị thông báo không hợp lệ nếu biến reservation_valid là False_out
+                    document.getElementById('invalid_out').style.display = 'block';
+                }
+                if (reservationValid === 'False_in') {
+                    // Hiển thị thông báo không hợp lệ nếu biến reservation_valid là False_in
+                    document.getElementById('invalid_in').style.display = 'block';
+                }
+            });
+        }, false);
+    })();
+</script>
+{% endblock %}    

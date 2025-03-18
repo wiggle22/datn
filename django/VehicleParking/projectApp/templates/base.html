@@ -1,0 +1,130 @@
+{% load static %}
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block css %}
+    {% endblock %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href={% static "styles.css" %}>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO" crossorigin="anonymous"></script>
+    {% block scripts %}
+    {% endblock scripts %}
+    <title>{% block title %} {% endblock title %}</title>
+</head>
+<body>
+    <style>
+        header h1 {
+            font-size: 1.5em;
+            padding-left: 20px;
+        }
+        footer p{
+            text-align: left;
+        }
+        .flex-wrapper {
+            display:flex;
+            min-height: 82vh;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+    </style>
+    <header class="bg-info text-white p-3 d-flex justify-content-between align-items-center flex-wrap">
+        <div class="logo">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'image/logo.png' %}" alt="Logo" class="img-fluid" style="width: 50px;">
+            </a>
+        </div>
+        <h1 class="flex-grow-1 text-left my-2">ĐỒ ÁN TỐT NGHIỆP: HỆ THỐNG TÌM KIẾM VỊ TRÍ ĐỖ XE Ô TÔ</h1>
+        <div class="user-controls d-flex align-items-center">
+        </div>
+        {% if not request.resolver_match.url_name|in_list:"login,signup" %}
+            {% if user.is_authenticated %}
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-toggle="dropdown" aria-expanded="false">
+                        <span class="ml-2">Xin chào, {{ user.customer.full_name }}</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right text-small" aria-labelledby="dropdownUser1">
+                        <a class="dropdown-item" href="{% url 'profile' %}">Chỉnh sửa thông tin</a>
+                        <a class="dropdown-item" href="{% url 'password_change' %}">Đổi mật khẩu</a>
+                        <div class="dropdown-divider"></div>
+                        <form action="{% url 'logout' %}" method="post" class="dropdown-item">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-link p-0" style="text-decoration: none; color: inherit;">Đăng xuất</button>
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <div class="nav-item">
+                    <button><a class="nav-link" href="{% url 'login' %}" style="color: black">ĐĂNG NHẬP</a></button>
+                </div>
+                <div class="nav-item">
+                    <button><a class="nav-link" href="{% url 'signup' %}" style="color: black">ĐĂNG KÝ</a></button>
+                </div>
+            {% endif %}
+        {% endif %}
+    </header>
+
+    <!-- Navbar -->
+    {% if user.is_authenticated %}
+    <nav class="navbar navbar-expand navbar-light bg-light">
+        <div class="mx-auto">
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'home' %}">Trang chủ <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'reservation_history' %}">Lịch sử đặt vé</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <div class="flex-wrapper">
+        {% block content %}
+        {% endblock content %}
+    </div>
+    <footer class="bg-info text-white text-center p-3">
+        <p>ĐỒ ÁN TỐT NGHIỆP: HỆ THỐNG TÌM KIẾM VỊ TRÍ ĐỖ XE Ô TÔ</p>
+        <p>Sinh viên: Lý Hữu Đang, Nguyễn Văn Trường Sinh</p>
+    </footer>
+    <!-- Thêm Bootstrap JS và phụ thuộc -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.81.1/dist/L.Control.Locate.min.css" />
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.81.1/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+
+    
+    <style>
+        .suggestions {
+            border: 1px solid #ddd;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .suggestion-item {
+            padding: 8px;
+            cursor: pointer;
+        }
+        .suggestion-item:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</body>
+</html>

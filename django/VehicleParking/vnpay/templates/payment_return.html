@@ -1,0 +1,25 @@
+{% extends "base_layout.html" %}
+{% block content %}
+    <div class="panel panel-default">
+        <div class="panel-heading">{{ title }}: {{ result }}</div>
+        <div class="panel-body">
+            <p>Mã hóa đơn:{{ order_id }}</p>
+            <p>Số tiền:{{ amount }} VNĐ</p>
+            <p>Thông tin giao dịch:{{ order_desc }}</p>
+            <p>Mã giao dịch:{{ vnp_TransactionNo }}</p>
+            {% if vnp_ResponseCode == '00' %}
+                <p>Trạng thái giao dịch: - Thành công</p>
+            {% else %}
+                <p>Trạng thái giao dịch: - Lỗi</p>
+            {% endif %}
+            {% if msg %}
+                <p class="alert-warning"> {{ msg }}</p>
+            {% endif %}
+            {% if vnp_ResponseCode == '00' %}
+                <a href="{% url 'reservation_success' reservation.id %}" class="btn btn-success">Hoàn tất</a>
+            {% else %}
+                <a href="{% url 'home' %}" class="btn btn-success">Về trang chủ</a>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
